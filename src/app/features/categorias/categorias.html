@@ -1,0 +1,112 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Categorías</h1>
+      <p>Administra las categorías que agrupan las publicaciones.</p>
+    </div>
+    <button class="btn btn-ghost" type="button" (click)="listar()" [disabled]="cargando()">
+      Actualizar
+    </button>
+  </header>
+
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  @if (aviso()) {
+    <div class="alert alert-ok" role="status">{{ aviso() }}</div>
+  }
+
+  <div class="grid-2">
+    <form class="card form" (ngSubmit)="guardar()">
+      <h2>{{ editandoId() === null ? 'Nueva categoría' : 'Editar categoría' }}</h2>
+
+      <label>
+        Nombre *
+        <input
+          name="nombre"
+          type="text"
+          maxlength="100"
+          placeholder="Ej. Tecnología"
+          [(ngModel)]="formulario.nombre"
+          required
+        />
+      </label>
+
+      <label>
+        Descripción
+        <textarea
+          name="descripcion"
+          rows="3"
+          placeholder="Descripción opcional"
+          [(ngModel)]="formulario.descripcion"
+        ></textarea>
+      </label>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit" [disabled]="guardando()">
+          {{
+            guardando()
+              ? 'Guardando…'
+              : editandoId() === null
+                ? 'Crear categoría'
+                : 'Guardar cambios'
+          }}
+        </button>
+
+        @if (editandoId() !== null) {
+          <button class="btn btn-ghost" type="button" (click)="cancelar()">
+            Cancelar
+          </button>
+        }
+      </div>
+    </form>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Listado</h2>
+        <span class="badge">{{ categorias().length }} categorías</span>
+      </div>
+
+      @if (cargando()) {
+        <p class="muted">Cargando categorías…</p>
+      } @else if (categorias().length === 0) {
+        <p class="muted">No hay categorías registradas.</p>
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th class="right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (categoria of categorias(); track categoria.id) {
+                <tr>
+                  <td>{{ categoria.id }}</td>
+                  <td class="strong">{{ categoria.nombre }}</td>
+                  <td>{{ categoria.descripcion || '—' }}</td>
+                  <td class="right nowrap">
+                    <button class="btn btn-sm" type="button" (click)="editar(categoria)">
+                      Editar
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger"
+                      type="button"
+                      (click)="eliminar(categoria)"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</section>

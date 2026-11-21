@@ -1,0 +1,197 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Publicaciones</h1>
+      <p>Crea, filtra y administra los anuncios publicados.</p>
+    </div>
+    <button class="btn btn-ghost" type="button" (click)="listar()" [disabled]="cargando()">
+      Actualizar
+    </button>
+  </header>
+
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  @if (aviso()) {
+    <div class="alert alert-ok" role="status">{{ aviso() }}</div>
+  }
+
+  <div class="card filters">
+    <div class="field">
+      <label for="filtroCategoria">Categoría</label>
+      <select id="filtroCategoria" name="filtroCategoria" [(ngModel)]="filtros.categoriaId">
+        <option value="">Todas</option>
+        @for (categoria of categorias(); track categoria.id) {
+          <option [value]="categoria.id">{{ categoria.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="filtroEstado">Estado</label>
+      <select id="filtroEstado" name="filtroEstado" [(ngModel)]="filtros.estado">
+        <option value="">Todos</option>
+        @for (estado of estados; track estado) {
+          <option [value]="estado">{{ estado }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filters-actions">
+      <button class="btn btn-primary" type="button" (click)="listar()" [disabled]="cargando()">
+        Filtrar
+      </button>
+      <button class="btn btn-ghost" type="button" (click)="limpiarFiltros()">
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <form class="card form" (ngSubmit)="guardar()">
+      <h2>{{ editandoId() === null ? 'Nueva publicación' : 'Editar publicación' }}</h2>
+
+      <label>
+        Título *
+        <input
+          name="titulo"
+          type="text"
+          maxlength="150"
+          placeholder="Ej. Bicicleta MTB rodado 29"
+          [(ngModel)]="formulario.titulo"
+          required
+        />
+      </label>
+
+      <label>
+        Descripción
+        <textarea
+          name="descripcion"
+          rows="3"
+          placeholder="Detalles del artículo"
+          [(ngModel)]="formulario.descripcion"
+        ></textarea>
+      </label>
+
+      <div class="row">
+        <label>
+          Precio *
+          <input
+            name="precio"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            [(ngModel)]="formulario.precio"
+            required
+          />
+        </label>
+
+        <label>
+          Estado
+          <select name="estado" [(ngModel)]="formulario.estado">
+            @for (estado of estados; track estado) {
+              <option [ngValue]="estado">{{ estado }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <label>
+        Categoría *
+        <select name="categoriaId" [(ngModel)]="formulario.categoriaId" required>
+          <option [ngValue]="null" disabled>Selecciona una categoría</option>
+          @for (categoria of categorias(); track categoria.id) {
+            <option [ngValue]="categoria.id">{{ categoria.nombre }}</option>
+          }
+        </select>
+      </label>
+
+      @if (categorias().length === 0) {
+        <p class="hint">
+          No hay categorías. Crea una primero en la sección
+          <a routerLink="/categorias">Categorías</a>.
+        </p>
+      }
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit" [disabled]="guardando()">
+          {{
+            guardando()
+              ? 'Guardando…'
+              : editandoId() === null
+                ? 'Crear publicación'
+                : 'Guardar cambios'
+          }}
+        </button>
+
+        @if (editandoId() !== null) {
+          <button class="btn btn-ghost" type="button" (click)="cancelar()">
+            Cancelar
+          </button>
+        }
+      </div>
+    </form>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Listado</h2>
+        <span class="badge">{{ publicaciones().length }} publicaciones</span>
+      </div>
+
+      @if (cargando()) {
+        <p class="muted">Cargando publicaciones…</p>
+      } @else if (publicaciones().length === 0) {
+        <p class="muted">No hay publicaciones que coincidan con el filtro.</p>
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Categoría</th>
+                <th class="right">Precio</th>
+                <th>Estado</th>
+                <th class="right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (publicacion of publicaciones(); track publicacion.id) {
+                <tr>
+                  <td>{{ publicacion.id }}</td>
+                  <td>
+                    <span class="strong">{{ publicacion.titulo }}</span>
+                    @if (publicacion.descripcion) {
+                      <small class="muted block">{{ publicacion.descripcion }}</small>
+                    }
+                  </td>
+                  <td>{{ publicacion.categoria?.nombre || publicacion.categoriaId }}</td>
+                  <td class="right">{{ publicacion.precio | number: '1.2-2' }}</td>
+                  <td>
+                    <span [class]="'pill estado-' + publicacion.estado">
+                      {{ publicacion.estado }}
+                    </span>
+                  </td>
+                  <td class="right nowrap">
+                    <button class="btn btn-sm" type="button" (click)="editar(publicacion)">
+                      Editar
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger"
+                      type="button"
+                      (click)="eliminar(publicacion)"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</section>

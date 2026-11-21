@@ -1,0 +1,22 @@
+<header class="app-header">
+  <a class="brand" routerLink="/publicaciones">
+    <span class="logo">A</span>
+    <span>
+      <strong>Anuncios</strong>
+      <small>Gestión de publicaciones y categorías</small>
+    </span>
+  </a>
+
+  <nav class="app-nav">
+    <a routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a>
+    <a routerLink="/categorias" routerLinkActive="active">Categorías</a>
+  </nav>
+</header>
+
+<main class="app-main">
+  <router-outlet />
+</main>
+
+<footer class="app-footer">
+  Angular + Express + Sequelize + PostgreSQL · API <code>/api</code>
+</footer>
