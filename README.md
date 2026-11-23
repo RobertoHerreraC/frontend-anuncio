@@ -5,7 +5,7 @@ Aplicación Angular 21 que consume la API del backend de anuncios (`/api`).
 ## Requisitos
 
 - Node.js 22.12+ o 24.x
-- Backend en ejecución (ver [`../README.md`](../README.md))
+- Backend en ejecución (ver [`../backend-anuncio/README.md`](../backend-anuncio/README.md))
 
 ## Ejecución con Docker
 
